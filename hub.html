@@ -1,0 +1,204 @@
+import React, { useState, useEffect } from 'react';
+import { Instagram, Heart, MessageCircle, ExternalLink, Play } from 'lucide-react';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Instagram Feed Section — for a saree shop website
+//
+// REPLACE the MOCK_FEED below with a fetch to your backend endpoint
+// that proxies the Instagram Graph API. See setup notes at the bottom.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SHOP = {
+  name: 'Rupa Sarees',
+  handle: 'rupasarees',          // your Instagram handle (without @)
+  tagline: 'Handwoven sarees from Chhattisgarh, delivered across India',
+};
+
+// Mock data — replace with real API response in production.
+const seedUrl = (s) => `https://picsum.photos/seed/${s}/800/800`;
+const MOCK_FEED = [
+  { id: '1', media_url: seedUrl('saree1'), permalink: '#', caption: 'New arrival: Banarasi silk in deep maroon. DM to order.', like_count: 247, comments_count: 18, media_type: 'IMAGE' },
+  { id: '2', media_url: seedUrl('saree2'), permalink: '#', caption: 'Kanjivaram collection · festive edit', like_count: 412, comments_count: 32, media_type: 'IMAGE' },
+  { id: '3', media_url: seedUrl('saree3'), permalink: '#', caption: 'Behind the loom — 60s reel', like_count: 1820, comments_count: 94, media_type: 'VIDEO' },
+  { id: '4', media_url: seedUrl('saree4'), permalink: '#', caption: 'Pastel chiffons for summer weddings', like_count: 356, comments_count: 24, media_type: 'IMAGE' },
+  { id: '5', media_url: seedUrl('saree5'), permalink: '#', caption: 'Bridal lehenga-saree · made to order', like_count: 689, comments_count: 51, media_type: 'IMAGE' },
+  { id: '6', media_url: seedUrl('saree6'), permalink: '#', caption: 'Cotton handloom · everyday elegance', like_count: 298, comments_count: 19, media_type: 'IMAGE' },
+  { id: '7', media_url: seedUrl('saree7'), permalink: '#', caption: 'Customer wearing our Patola silk ✨', like_count: 524, comments_count: 41, media_type: 'IMAGE' },
+  { id: '8', media_url: seedUrl('saree8'), permalink: '#', caption: 'Festive dispatch in progress', like_count: 187, comments_count: 12, media_type: 'VIDEO' },
+];
+
+export default function InstagramFeedSection() {
+  const [feed, setFeed] = useState(MOCK_FEED);
+  const [loading, setLoading] = useState(false);
+  const [hovered, setHovered] = useState(null);
+
+  // In production, replace this with:
+  //
+  // useEffect(() => {
+  //   fetch('/api/instagram-feed')
+  //     .then(r => r.json())
+  //     .then(data => { setFeed(data.data); setLoading(false); });
+  // }, []);
+
+  const fmt = (n) => (n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + 'k' : n);
+
+  return (
+    <section
+      style={{
+        background: '#fdfaf6',
+        padding: '80px 24px',
+        fontFamily: '"Plus Jakarta Sans", -apple-system, sans-serif',
+        color: '#2a1e1a',
+      }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
+        .display { font-family: 'Cormorant Garamond', serif; letter-spacing: -0.01em; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-up { animation: fadeUp .7s cubic-bezier(.16,1,.3,1) both; }
+
+        .feed-grid {
+          display: grid;
+          gap: 14px;
+          grid-template-columns: repeat(4, 1fr);
+        }
+        @media (max-width: 900px) { .feed-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; } }
+        @media (max-width: 600px) { .feed-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
+
+        .feed-tile {
+          position: relative;
+          aspect-ratio: 1 / 1;
+          overflow: hidden;
+          border-radius: 6px;
+          cursor: pointer;
+          background: #f1ebe2;
+        }
+        .feed-tile img {
+          width: 100%; height: 100%; object-fit: cover;
+          transition: transform .9s cubic-bezier(.16,1,.3,1);
+        }
+        .feed-tile:hover img { transform: scale(1.07); }
+        .feed-tile .feed-overlay {
+          position: absolute; inset: 0;
+          background: linear-gradient(180deg, transparent 30%, rgba(80,40,30,.78));
+          opacity: 0;
+          transition: opacity .35s;
+          display: flex; align-items: flex-end; padding: 14px;
+        }
+        .feed-tile:hover .feed-overlay { opacity: 1; }
+
+        .follow-btn {
+          display: inline-flex; align-items: center; gap: 9px;
+          padding: 13px 26px;
+          background: #8b2a2a;
+          color: #fdfaf6;
+          font-size: 14px; font-weight: 500;
+          border-radius: 999px;
+          text-decoration: none;
+          transition: background .25s, transform .25s;
+          border: none; cursor: pointer;
+          letter-spacing: .02em;
+        }
+        .follow-btn:hover { background: #6e1e1e; transform: translateY(-1px); }
+      `}</style>
+
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        {/* Header */}
+        <div className="fade-up" style={{ textAlign: 'center', marginBottom: 46 }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 7,
+            fontSize: 11.5, letterSpacing: '.22em', textTransform: 'uppercase',
+            color: '#8b2a2a', fontWeight: 600, marginBottom: 14,
+          }}>
+            <span style={{ width: 24, height: 1, background: '#8b2a2a' }} />
+            Follow our journey
+            <span style={{ width: 24, height: 1, background: '#8b2a2a' }} />
+          </div>
+          <h2 className="display" style={{
+            fontSize: 'clamp(34px, 5vw, 52px)',
+            margin: '0 0 12px',
+            fontWeight: 500, lineHeight: 1.1,
+          }}>
+            From our loom to your wardrobe
+          </h2>
+          <p style={{ fontSize: 16, color: '#6b5a52', maxWidth: 540, margin: '0 auto', lineHeight: 1.6 }}>
+            See our newest arrivals, behind-the-scenes from the workshop, and customers wearing {SHOP.name}.
+          </p>
+          <a
+            href={`https://instagram.com/${SHOP.handle}`}
+            target="_blank" rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              marginTop: 18, color: '#8b2a2a', fontWeight: 600, fontSize: 14.5,
+              textDecoration: 'none',
+            }}
+          >
+            <Instagram size={17} /> @{SHOP.handle}
+          </a>
+        </div>
+
+        {/* Grid */}
+        <div className="feed-grid">
+          {feed.map((post, i) => (
+            <a
+              key={post.id}
+              href={post.permalink}
+              target="_blank" rel="noopener noreferrer"
+              className="feed-tile fade-up"
+              style={{ animationDelay: `${i * 0.05}s`, textDecoration: 'none' }}
+              onMouseEnter={() => setHovered(post.id)}
+              onMouseLeave={() => setHovered(null)}
+            >
+              <img src={post.media_url} alt={post.caption} loading="lazy" />
+              {post.media_type === 'VIDEO' && (
+                <div style={{
+                  position: 'absolute', top: 10, right: 10,
+                  color: '#fff', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,.6))',
+                }}>
+                  <Play size={17} fill="#fff" />
+                </div>
+              )}
+              <div className="feed-overlay">
+                <div style={{ color: '#fff', width: '100%' }}>
+                  <div style={{ display: 'flex', gap: 14, fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <Heart size={14} fill="#fff" /> {fmt(post.like_count)}
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <MessageCircle size={14} fill="#fff" /> {post.comments_count}
+                    </span>
+                    <ExternalLink size={13} style={{ marginLeft: 'auto', opacity: .8 }} />
+                  </div>
+                  <div style={{
+                    fontSize: 11.5, opacity: .92, lineHeight: 1.45,
+                    display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}>
+                    {post.caption}
+                  </div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div style={{ textAlign: 'center', marginTop: 46 }}>
+          <a
+            href={`https://instagram.com/${SHOP.handle}`}
+            target="_blank" rel="noopener noreferrer"
+            className="follow-btn"
+          >
+            <Instagram size={16} />
+            Follow @{SHOP.handle} on Instagram
+          </a>
+          <div style={{ fontSize: 13, color: '#8a7568', marginTop: 14 }}>
+            Updated automatically · DM us to order any saree you see
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
